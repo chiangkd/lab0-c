@@ -76,7 +76,7 @@ element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
 {
     if (!head || list_empty(head))
         return NULL;
-    element_t *rm_element = container_of(head->next, element_t, list);
+    element_t *rm_element = list_entry(head->next, element_t, list);
     if (sp) {
         strncpy(sp, rm_element->value, bufsize - 1);
         sp[bufsize - 1] = '\0';
