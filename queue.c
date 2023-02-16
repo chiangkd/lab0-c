@@ -188,7 +188,79 @@ void q_reverseK(struct list_head *head, int k)
 }
 
 /* Sort elements of queue in ascending order */
-void q_sort(struct list_head *head) {}
+
+
+
+struct list_head *merge_two_list(struct list_head *left,
+                                 struct list_head *right)
+{
+    struct list_head head;
+    struct list_head *h = &head;
+    if (!left && !right) {
+        return NULL;
+    }
+    while (left && right) {
+        if (strcmp(list_entry(left, element_t, list)->value,
+                   list_entry(right, element_t, list)->value) < 0) {
+            h->next = left;
+            left = left->next;
+            h = h->next;
+        } else {
+            h->next = right;
+            right = right->next;
+            h = h->next;
+        }
+    }
+    // after merge, there are still one node still not connect yet
+
+    if (left) {
+        h->next = left;
+    } else if (right) {
+        h->next = right;
+    }
+    return head.next;
+}
+
+struct list_head *merge_recur(struct list_head *head)
+{
+    if (!head->next)
+        return head;
+
+    struct list_head *slow = head;
+    // split list
+    for (struct list_head *fast = head->next; fast && fast->next;
+         fast = fast->next->next) {
+        slow = slow->next;
+    }
+
+    struct list_head *mid = slow->next;  // the start node of right part
+    slow->next = NULL;
+
+    struct list_head *left = merge_recur(head);
+    struct list_head *right = merge_recur(mid);
+
+    return merge_two_list(left, right);
+}
+
+void q_sort(struct list_head *head)
+{
+    // Leetcode #148 Sort List
+    // https://leetcode.com/problems/sort-list/
+    if (!head || list_empty(head))
+        return;
+    // disconnect the circular structure
+    head->prev->next = NULL;
+    head->next = merge_recur(head->next);
+    // reconnect the list (prev and circular)
+    struct list_head *c = head, *n = head->next;
+    while (n) {
+        n->prev = c;
+        c = n;
+        n = n->next;
+    }
+    c->next = head;
+    head->prev = c;
+}
 
 /* Remove every node which has a node with a strictly greater value anywhere to
  * the right side of it */
