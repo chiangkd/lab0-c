@@ -39,11 +39,11 @@ bool q_insert_head(struct list_head *head, char *s)
     if (!head)
         return false;
     element_t *new_element = malloc(sizeof(element_t));  // new head element
-    if (!new_element)                                    // If allocate failed
+    if (!new_element)                                    // allocated failed
         return false;
     size_t len = strlen(s) + 1;  // plus 1 for `\0`
     new_element->value = malloc(len * sizeof(char));
-    if (!new_element->value) {  // If allocate failed
+    if (!new_element->value) {  // allocated failed
         free(new_element);
         return false;
     }
@@ -62,7 +62,7 @@ bool q_insert_tail(struct list_head *head, char *s)
         return false;
     size_t len = strlen(s) + 1;  // plus 1 for `\0`
     new_element->value = malloc(len * sizeof(char));
-    if (!new_element->value) {  // allocated failed
+    if (!new_element->value) {  //
         free(new_element);
         return false;
     }
@@ -258,6 +258,8 @@ struct list_head *merge_recur(struct list_head *head)
 
 void q_sort(struct list_head *head)
 {
+    // Leetcode #148 Sort List
+    // https://leetcode.com/problems/sort-list/
     if (!head || list_empty(head))
         return;
     // disconnect the circular structure
