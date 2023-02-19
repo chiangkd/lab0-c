@@ -280,16 +280,18 @@ void q_sort(struct list_head *head)
  * the right side of it */
 int q_descend(struct list_head *head)
 {
-    struct list_head *c = head->prev, *n = c->prev;
-
-    while (n != head) {
-        if (strcmp(list_entry(n, element_t, list)->value,
-                   list_entry(c, element_t, list)->value) < 0) {
-            list_del(n);
+    if (!head)
+        return 0;
+    struct list_head *c = head->prev;
+    element_t *c_ele = list_entry(c, element_t, list);
+    while (c_ele->list.prev != head) {
+        element_t *n_ele = list_entry(c_ele->list.prev, element_t, list);
+        if (strcmp(n_ele->value, c_ele->value) < 0) {
+            list_del(&n_ele->list);
+            q_release_element(n_ele);
         } else {
-            c = n;
+            c_ele = n_ele;
         }
-        n = n->prev;
     }
     return q_size(head);
 }
