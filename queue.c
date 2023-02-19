@@ -203,16 +203,16 @@ void q_reverseK(struct list_head *head, int k)
 
 /* Sort elements of queue in ascending order */
 
-
-
 struct list_head *merge_two_list(struct list_head *left,
                                  struct list_head *right)
 {
     struct list_head head;
     struct list_head *h = &head;
-    if (!left && !right) {
-        return NULL;
-    }
+    if (!left)
+        return right;
+    else if (!right)
+        return left;
+
     while (left && right) {
         if (strcmp(list_entry(left, element_t, list)->value,
                    list_entry(right, element_t, list)->value) < 0) {
@@ -297,6 +297,31 @@ int q_descend(struct list_head *head)
 /* Merge all the queues into one sorted queue, which is in ascending order */
 int q_merge(struct list_head *head)
 {
-    // https://leetcode.com/problems/merge-k-sorted-lists/
-    return 0;
+    if (!head)
+        return 0;
+    queue_contex_t *c_cont;
+    queue_contex_t *n_cont;
+    struct list_head *sorted = NULL;
+
+    list_for_each_entry_safe (c_cont, n_cont, head, chain) {  // iterate context
+        c_cont->q->prev->next = NULL;
+        c_cont->q->prev = NULL;
+        sorted = merge_two_list(sorted, c_cont->q->next);
+        INIT_LIST_HEAD(c_cont->q);  // reconnect the lists which are moved and
+                                    // merged to "sorted" list;
+    }
+    LIST_HEAD(tmp);
+    struct list_head *t = &tmp;
+    t->next = sorted;
+    struct list_head *c = t;
+    while (sorted) {
+        sorted->prev = c;
+        c = sorted;
+        sorted = sorted->next;
+    }
+    c->next = t;
+    t->prev = c;
+    int size = q_size(t);  // store size before splice to main queue
+    list_splice(t, list_first_entry(head, queue_contex_t, chain)->q);
+    return size;
 }
