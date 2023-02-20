@@ -670,6 +670,29 @@ bool do_sort(int argc, char *argv[])
     return ok && !error_check();
 }
 
+void q_shuffle(struct list_head *head);
+
+static bool do_shuffle(int argc, char *argv[])
+{
+    if (argc != 1) {
+        report(1, "%s takes no argu,emts", argv[0]);  // return function error
+        return false;
+    }
+
+    if (!current || !current->q)
+        report(3, "Warning: Calling shuffle on null queue");
+    error_check();
+
+    if (exception_setup(true))
+        q_shuffle(current->q);
+    exception_cancel();
+
+    set_noallocate_mode(false);
+
+    q_show(3);
+    return !error_check();
+}
+
 static bool do_dm(int argc, char *argv[])
 {
     if (argc != 1) {
@@ -1011,6 +1034,7 @@ static void console_init()
     ADD_COMMAND(reverse, "Reverse queue", "");
     ADD_COMMAND(sort, "Sort queue in ascending order", "");
     ADD_COMMAND(size, "Compute queue size n times (default: n == 1)", "[n]");
+    ADD_COMMAND(shuffle, "Shuffle queue", "");
     ADD_COMMAND(show, "Show queue contents", "");
     ADD_COMMAND(dm, "Delete middle node in queue", "");
     ADD_COMMAND(dedup, "Delete all nodes that have duplicate string", "");
