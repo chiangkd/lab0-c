@@ -41,13 +41,11 @@ bool q_insert_head(struct list_head *head, char *s)
     element_t *new_element = malloc(sizeof(element_t));  // new head element
     if (!new_element)                                    // allocated failed
         return false;
-    size_t len = strlen(s) + 1;  // plus 1 for `\0`
-    new_element->value = malloc(len * sizeof(char));
+    new_element->value = strdup(s);
     if (!new_element->value) {  // allocated failed
         free(new_element);
         return false;
     }
-    memcpy(new_element->value, s, len);
     list_add(&new_element->list, head);
     return true;
 }
@@ -57,18 +55,7 @@ bool q_insert_tail(struct list_head *head, char *s)
 {
     if (!head)
         return false;
-    element_t *new_element = malloc(sizeof(element_t));  // new tail element
-    if (!new_element)                                    // allocated failed
-        return false;
-    size_t len = strlen(s) + 1;  // plus 1 for `\0`
-    new_element->value = malloc(len * sizeof(char));
-    if (!new_element->value) {  //
-        free(new_element);
-        return false;
-    }
-    memcpy(new_element->value, s, len);
-    list_add_tail(&new_element->list, head);
-    return true;
+    return q_insert_head(head->prev, s);
 }
 
 /* Remove an element from head of queue */
